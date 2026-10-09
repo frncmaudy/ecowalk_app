@@ -74,11 +74,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
       obscureText: !visible,
       validator: validator,
       cursorColor: const Color(0xFF1A6556),
-      style: const TextStyle(
-        fontFamily: "Kanit",
-        fontSize: 12,
-        color: Colors.black,
-      ),
+      style: const TextStyle(fontFamily: "Kanit", fontSize: 12),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: const TextStyle(
@@ -87,44 +83,31 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
           fontStyle: FontStyle.italic,
           color: Color(0xFF8A8A8A),
         ),
+
         prefixIcon: const Padding(
-          padding: EdgeInsets.only(left: 6, right: 4),
+          padding: EdgeInsets.only(left: 5),
           child: Icon(Icons.lock, size: 18, color: Color(0xFF777777)),
         ),
-        prefixIconConstraints: const BoxConstraints(
-          minWidth: 30,
-          minHeight: 22,
-        ),
+
         suffixIcon: IconButton(
           onPressed: toggle,
           icon: Icon(
             visible ? Icons.visibility : Icons.visibility_off,
             size: 18,
-            color: const Color(0xFF8A8A8A),
+            color: const Color(0xFF888888),
           ),
         ),
-        suffixIconConstraints: const BoxConstraints(
-          minWidth: 34,
-          minHeight: 22,
-        ),
+
         isDense: true,
-        contentPadding: const EdgeInsets.only(
-          top: 10,
-          bottom: 10,
-          left: 6,
-          right: 6,
-        ),
+
+        contentPadding: const EdgeInsets.symmetric(vertical: 12),
+
         enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFF777777), width: 1),
+          borderSide: BorderSide(color: Color(0xFF777777)),
         ),
+
         focusedBorder: const UnderlineInputBorder(
           borderSide: BorderSide(color: Color(0xFF1A6556), width: 1.3),
-        ),
-        errorBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.red),
-        ),
-        focusedErrorBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.red),
         ),
       ),
     );
@@ -132,136 +115,143 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final contentHeight = screenHeight < 852 ? 852.0 : screenHeight;
-
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: SizedBox(
-          width: double.infinity,
-          height: contentHeight,
-          child: Form(
-            key: formKey,
-            child: Stack(
-              children: [
-                ClipPath(
-                  clipper: NewPasswordHeaderClipper(),
-                  child: Container(
-                    width: double.infinity,
-                    height: 270,
-                    color: const Color(0xFFDCEAE8),
-                  ),
-                ),
 
-                Positioned(
-                  top: 146,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: SvgPicture.asset(
-                      "lib/images/ecowalk_green.svg",
-                      width: 160,
-                      height: 46,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
+      body: Stack(
+        children: [
+          ClipPath(
+            clipper: NewPasswordHeaderClipper(),
 
-                Positioned(
-                  top: 204,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: SvgPicture.asset(
-                      "lib/images/lupakatasandi_title.svg",
-                      width: 198,
-                      height: 16,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
-
-                const Positioned(
-                  top: 302,
-                  left: 23,
-                  child: Text(
-                    "Masukan Kata Sandi Baru",
-                    style: TextStyle(
-                      fontFamily: "Kanit",
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-
-                Positioned(
-                  top: 346,
-                  left: 23,
-                  right: 23,
-                  child: passwordField(
-                    controller: passwordController,
-                    hint: "Kata Sandi Baru",
-                    visible: passwordVisible,
-                    validator: validatePassword,
-                    toggle: () {
-                      setState(() {
-                        passwordVisible = !passwordVisible;
-                      });
-                    },
-                  ),
-                ),
-
-                Positioned(
-                  top: 405,
-                  left: 23,
-                  right: 23,
-                  child: passwordField(
-                    controller: confirmPasswordController,
-                    hint: "Konfirmasi Kata Sandi",
-                    visible: confirmPasswordVisible,
-                    validator: validateConfirmPassword,
-                    toggle: () {
-                      setState(() {
-                        confirmPasswordVisible = !confirmPasswordVisible;
-                      });
-                    },
-                  ),
-                ),
-
-                Positioned(
-                  top: 523,
-                  left: 23,
-                  right: 23,
-                  child: SizedBox(
-                    height: 45,
-                    child: ElevatedButton(
-                      onPressed: changePassword,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1A6556),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: EdgeInsets.zero,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                      child: const Text(
-                        "UBAH KATA SANDI",
-                        style: TextStyle(
-                          fontFamily: "Kanit",
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            child: Container(
+              width: double.infinity,
+              height: 300,
+              color: const Color(0xFFDCEAE8),
             ),
           ),
-        ),
+
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 23),
+
+              child: Form(
+                key: formKey,
+
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+
+                  children: [
+                    const SizedBox(height: 115),
+
+                    Center(
+                      child: SvgPicture.asset(
+                        "lib/images/ecowalk_green.svg",
+                        width: 180,
+                        height: 50,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    Center(
+                      child: SvgPicture.asset(
+                        "lib/images/lupakatasandi_title.svg",
+                        width: 198,
+                        height: 16,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+
+                    const SizedBox(height: 80),
+
+                    const Text(
+                      "Masukan Kata Sandi Baru",
+
+                      style: TextStyle(
+                        fontFamily: "Kanit",
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+
+                    const SizedBox(height: 35),
+
+                    passwordField(
+                      controller: passwordController,
+
+                      hint: "Kata Sandi Baru",
+
+                      visible: passwordVisible,
+
+                      validator: validatePassword,
+
+                      toggle: () {
+                        setState(() {
+                          passwordVisible = !passwordVisible;
+                        });
+                      },
+                    ),
+
+                    const SizedBox(height: 28),
+
+                    passwordField(
+                      controller: confirmPasswordController,
+
+                      hint: "Konfirmasi Kata Sandi",
+
+                      visible: confirmPasswordVisible,
+
+                      validator: validateConfirmPassword,
+
+                      toggle: () {
+                        setState(() {
+                          confirmPasswordVisible = !confirmPasswordVisible;
+                        });
+                      },
+                    ),
+
+                    const SizedBox(height: 55),
+
+                    SizedBox(
+                      width: double.infinity,
+
+                      height: 45,
+
+                      child: ElevatedButton(
+                        onPressed: changePassword,
+
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF1A6556),
+
+                          foregroundColor: Colors.white,
+
+                          elevation: 0,
+
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+
+                        child: const Text(
+                          "UBAH KATA SANDI",
+
+                          style: TextStyle(
+                            fontFamily: "Kanit",
+
+                            fontSize: 14,
+
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -272,9 +262,12 @@ class NewPasswordHeaderClipper extends CustomClipper<Path> {
   Path getClip(Size size) {
     final path = Path();
 
-    path.lineTo(0, 115);
-    path.lineTo(size.width, 260);
+    path.lineTo(0, 145);
+
+    path.lineTo(size.width, 290);
+
     path.lineTo(size.width, 0);
+
     path.close();
 
     return path;
