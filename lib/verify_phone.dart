@@ -3,7 +3,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class VerifyPhonePage extends StatefulWidget {
-  const VerifyPhonePage({super.key});
+  final String? phoneNumber;
+  final String nextRoute;
+  final bool returnToExistingRoute;
+
+  const VerifyPhonePage({
+    super.key,
+    this.phoneNumber,
+    this.nextRoute = "/login",
+    this.returnToExistingRoute = false,
+  });
 
   @override
   State<VerifyPhonePage> createState() => _VerifyPhonePageState();
@@ -42,12 +51,31 @@ class _VerifyPhonePageState extends State<VerifyPhonePage> {
       return;
     }
 
-    Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
+    if (widget.returnToExistingRoute) {
+      Navigator.popUntil(context, ModalRoute.withName(widget.nextRoute));
+    } else {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        widget.nextRoute,
+        (route) => false,
+      );
+    }
   }
 
   void resendCode() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Kode verifikasi telah dikirim ulang")),
+    );
+  }
+
+  void useEmailVerification() {
+    Navigator.pushReplacementNamed(
+      context,
+      "/verify-email",
+      arguments: {
+        "nextRoute": widget.nextRoute,
+        "returnToExistingRoute": widget.returnToExistingRoute,
+      },
     );
   }
 
@@ -99,6 +127,8 @@ class _VerifyPhonePageState extends State<VerifyPhonePage> {
 
   @override
   Widget build(BuildContext context) {
+    final phoneNumber = widget.phoneNumber ?? "+6212371923719238";
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -162,20 +192,22 @@ class _VerifyPhonePageState extends State<VerifyPhonePage> {
 
                       Expanded(
                         child: RichText(
-                          text: const TextSpan(
-                            style: TextStyle(
+                          text: TextSpan(
+                            style: const TextStyle(
                               fontFamily: "Kanit",
                               fontSize: 13,
                               color: Colors.black,
                               height: 1.25,
                             ),
                             children: [
-                              TextSpan(
+                              const TextSpan(
                                 text: "Periksa dan ketik kode verifikasi yang telah dikirimkan\nke ",
                               ),
                               TextSpan(
-                                text: "+6212371923719238",
-                                style: TextStyle(fontWeight: FontWeight.w600),
+                                text: phoneNumber,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ],
                           ),
@@ -199,9 +231,7 @@ class _VerifyPhonePageState extends State<VerifyPhonePage> {
                   const SizedBox(height: 31),
 
                   GestureDetector(
-                    onTap: () {
-                      Navigator.pushReplacementNamed(context, "/verify-email");
-                    },
+                    onTap: useEmailVerification,
                     child: const Text(
                       "Verifikasi menggunakan Email",
                       style: TextStyle(

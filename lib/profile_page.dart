@@ -5,6 +5,121 @@ import 'package:flutter_svg/flutter_svg.dart';
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
+  Future<void> showLogoutDialog(BuildContext context) async {
+    const green = Color(0xFF176E5E);
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.black.withValues(alpha: 0.32),
+      builder: (dialogContext) {
+        return Transform.translate(
+          // Geser dialog ke atas agar menutupi baris Pengaturan.
+          offset: const Offset(0, -40),
+          child: Dialog(
+            backgroundColor: Colors.white,
+            insetPadding: const EdgeInsets.symmetric(horizontal: 54),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(45, 27, 45, 29),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Keluar?",
+                    style: TextStyle(
+                      fontFamily: "Kanit",
+                      fontSize: 19,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  const Text(
+                    "Apakah Kamu Yakin Ingin Keluar?",
+                    style: TextStyle(
+                      fontFamily: "Kanit",
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFF555555),
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: SizedBox(
+                          height: 32,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(dialogContext);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: green,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              padding: EdgeInsets.zero,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                            child: const Text(
+                              "Batal",
+                              style: TextStyle(
+                                fontFamily: "Kanit",
+                                fontSize: 17,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: SizedBox(
+                          height: 32,
+                          child: OutlinedButton(
+                            onPressed: () {
+                              Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                "/login",
+                                (route) => false,
+                              );
+                            },
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.black,
+                              padding: EdgeInsets.zero,
+                              side: const BorderSide(color: green, width: 1.5),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                            child: const Text(
+                              "Keluar",
+                              style: TextStyle(
+                                fontFamily: "Kanit",
+                                fontSize: 17,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Widget menuItem({
     required BuildContext context,
     required String title,
@@ -31,7 +146,9 @@ class ProfilePage extends StatelessWidget {
                   ? SvgPicture.asset(svgAsset, fit: BoxFit.contain)
                   : Icon(icon, size: 26, color: Colors.black),
             ),
+
             const SizedBox(width: 20),
+
             Expanded(
               child: Text(
                 title,
@@ -43,6 +160,7 @@ class ProfilePage extends StatelessWidget {
                 ),
               ),
             ),
+
             const Icon(Icons.chevron_right, size: 30, color: Colors.black),
           ],
         ),
@@ -66,6 +184,7 @@ class ProfilePage extends StatelessWidget {
       ),
       child: Scaffold(
         backgroundColor: Colors.white,
+
         body: Column(
           children: [
             Container(
@@ -174,35 +293,45 @@ class ProfilePage extends StatelessWidget {
                       context: context,
                       icon: Icons.settings_outlined,
                       title: "Pengaturan",
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(context, "/settings");
+                      },
                     ),
 
                     menuItem(
                       context: context,
                       svgAsset: "lib/images/edit_profile_icon.svg",
                       title: "Edit Profil",
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(context, "/edit-profile");
+                      },
                     ),
 
                     menuItem(
                       context: context,
                       icon: Icons.lock_outline,
                       title: "Kebijakan Privasi",
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(context, "/privacy-policy");
+                      },
                     ),
 
                     menuItem(
                       context: context,
                       icon: Icons.info_outline,
                       title: "Tentang Kami",
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(context, "/about-us");
+                      },
                     ),
 
                     menuItem(
                       context: context,
                       icon: Icons.task_outlined,
                       title: "Ketentuan Layanan",
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(context, "/terms");
+                      },
                     ),
 
                     menuItem(
@@ -210,11 +339,7 @@ class ProfilePage extends StatelessWidget {
                       icon: Icons.logout,
                       title: "Keluar",
                       onTap: () {
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          "/login",
-                          (route) => false,
-                        );
+                        showLogoutDialog(context);
                       },
                     ),
                   ],
@@ -310,6 +435,7 @@ class ProfilePage extends StatelessWidget {
                                 color: green,
                               ),
                             ),
+
                             const Text(
                               "AKUN",
                               style: TextStyle(
