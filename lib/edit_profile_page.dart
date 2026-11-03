@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'user_profile.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -21,12 +22,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
   void saveProfile() {
     FocusScope.of(context).unfocus();
 
-    if (usernameController.text.trim().isEmpty) {
+    final newName = usernameController.text.trim();
+    if (newName.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Nama pengguna wajib diisi")),
       );
       return;
     }
+
+    UserProfile.updateProfile(newName: newName);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Profil berhasil diperbarui"),
+        duration: Duration(seconds: 2),
+      ),
+    );
 
     Navigator.pop(context);
   }
@@ -79,7 +90,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withOpacity(0.32),
+      barrierColor: Colors.black.withValues(alpha: 0.32),
       isScrollControlled: true,
       builder: (context) {
         return Container(
@@ -124,6 +135,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     label: "Galeri",
                     onTap: () {
                       Navigator.pop(context);
+                      Navigator.pushNamed(context, "/editprofile-preview");
                     },
                   ),
                 ],
@@ -218,21 +230,26 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           decoration: const BoxDecoration(
                             shape: BoxShape.circle,
                           ),
-                          child: ClipOval(
-                            child: Image.asset(
-                              "lib/images/profile.jpeg",
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  color: const Color(0xFFEAEAEA),
-                                  child: const Icon(
-                                    Icons.person,
-                                    size: 70,
-                                    color: green,
-                                  ),
-                                );
-                              },
-                            ),
+                          child: ValueListenableBuilder<String>(
+                            valueListenable: UserProfile.imageNotifier,
+                            builder: (context, currentImage, _) {
+                              return ClipOval(
+                                child: Image.asset(
+                                  currentImage,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      color: const Color(0xFFEAEAEA),
+                                      child: const Icon(
+                                        Icons.person,
+                                        size: 70,
+                                        color: green,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            },
                           ),
                         ),
 

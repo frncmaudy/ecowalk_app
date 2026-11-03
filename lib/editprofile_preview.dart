@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'user_profile.dart';
 
 class EditProfilePreviewPage extends StatefulWidget {
   const EditProfilePreviewPage({super.key});
@@ -19,6 +20,19 @@ class _EditProfilePreviewPageState extends State<EditProfilePreviewPage> {
 
   void saveProfile() {
     FocusScope.of(context).unfocus();
+
+    final newName = usernameController.text.trim();
+    UserProfile.updateProfile(
+      newName: newName.isNotEmpty ? newName : null,
+      newImage: "lib/images/profile_preview.png",
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Profil berhasil diperbarui"),
+        duration: Duration(seconds: 2),
+      ),
+    );
 
     Navigator.pushNamedAndRemoveUntil(context, "/profile", (route) => false);
   }

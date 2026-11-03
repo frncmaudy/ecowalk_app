@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     if (username == validUsername && password == validPassword) {
-      Navigator.pushReplacementNamed(context, "/profile");
+      Navigator.pushNamedAndRemoveUntil(context, "/home", (route) => false);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Nama pengguna atau kata sandi salah")),
@@ -76,7 +76,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-
     final contentHeight = screenHeight < 852 ? 852.0 : screenHeight;
 
     return Scaffold(

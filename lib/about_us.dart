@@ -199,7 +199,6 @@ class AboutUs extends StatelessWidget {
   }
 }
 
-// Bullet dengan baris lanjutan sejajar dengan teks
 class AboutBulletText extends StatelessWidget {
   final String text;
 
@@ -238,7 +237,6 @@ class AboutBulletText extends StatelessWidget {
   }
 }
 
-// Baris kontak
 class ContactRow extends StatelessWidget {
   final IconData icon;
   final String text;

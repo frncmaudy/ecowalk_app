@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'user_profile.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -14,7 +15,6 @@ class ProfilePage extends StatelessWidget {
       barrierColor: Colors.black.withValues(alpha: 0.32),
       builder: (dialogContext) {
         return Transform.translate(
-          // Geser dialog ke atas agar menutupi baris Pengaturan.
           offset: const Offset(0, -40),
           child: Dialog(
             backgroundColor: Colors.white,
@@ -126,16 +126,19 @@ class ProfilePage extends StatelessWidget {
     required VoidCallback onTap,
     IconData? icon,
     String? svgAsset,
+    bool showBottomBorder = true,
   }) {
     return InkWell(
       onTap: onTap,
       child: Container(
         height: 70,
         padding: const EdgeInsets.symmetric(horizontal: 12),
-        decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: Color(0xFFD0D0D0), width: 1),
-          ),
+        decoration: BoxDecoration(
+          border: showBottomBorder
+              ? const Border(
+                  bottom: BorderSide(color: Color(0xFFD0D0D0), width: 1),
+                )
+              : null,
         ),
         child: Row(
           children: [
@@ -218,39 +221,49 @@ class ProfilePage extends StatelessWidget {
                           color: Colors.white,
                         ),
                         padding: const EdgeInsets.all(5),
-                        child: ClipOval(
-                          child: Image.asset(
-                            "lib/images/profile.jpeg",
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                color: const Color(0xFFEAEAEA),
-                                child: const Icon(
-                                  Icons.person,
-                                  size: 75,
-                                  color: green,
-                                ),
-                              );
-                            },
-                          ),
+                        child: ValueListenableBuilder<String>(
+                          valueListenable: UserProfile.imageNotifier,
+                          builder: (context, currentImage, _) {
+                            return ClipOval(
+                              child: Image.asset(
+                                currentImage,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: const Color(0xFFEAEAEA),
+                                    child: const Icon(
+                                      Icons.person,
+                                      size: 75,
+                                      color: green,
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ),
                   ),
 
-                  const Positioned(
+                  Positioned(
                     top: 158,
                     left: 0,
                     right: 0,
-                    child: Text(
-                      "FIORENCIA MAUDY",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: "Kanit",
-                        fontSize: 21,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.black,
-                      ),
+                    child: ValueListenableBuilder<String>(
+                      valueListenable: UserProfile.nameNotifier,
+                      builder: (context, currentName, _) {
+                        return Text(
+                          currentName.toUpperCase(),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontFamily: "Kanit",
+                            fontSize: 21,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black,
+                          ),
+                        );
+                      },
                     ),
                   ),
 
@@ -338,6 +351,7 @@ class ProfilePage extends StatelessWidget {
                       context: context,
                       icon: Icons.logout,
                       title: "Keluar",
+                      showBottomBorder: false,
                       onTap: () {
                         showLogoutDialog(context);
                       },
@@ -349,110 +363,126 @@ class ProfilePage extends StatelessWidget {
           ],
         ),
 
-        bottomNavigationBar: SizedBox(
-          height: 85,
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Positioned(
-                left: 0,
-                right: 0,
-                top: 22,
-                bottom: 0,
-                child: Container(color: green),
+        bottomNavigationBar: Container(
+          color: green,
+          child: SafeArea(
+            top: false,
+            child: SizedBox(
+              height: 65,
+              child: Row(
+                children: [
+                  // Beranda
+                  Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        Navigator.pushReplacementNamed(context, "/home");
+                      },
+                      child: Center(
+                        child: SvgPicture.asset(
+                          "lib/images/home_nav_icon.svg",
+                          width: 25,
+                          height: 24,
+                          fit: BoxFit.contain,
+                          colorFilter: const ColorFilter.mode(
+                            Colors.white,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Rekomendasi
+                  Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        Navigator.pushReplacementNamed(
+                          context,
+                          "/rekomendasi",
+                        );
+                      },
+                      child: Center(
+                        child: Image.asset(
+                          "lib/images/recommendation_nav_icon.png",
+                          width: 20,
+                          height: 24,
+                          color: Colors.white,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Chat
+                  Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {},
+                      child: Center(
+                        child: SvgPicture.asset(
+                          "lib/images/chat_nav_icon.svg",
+                          width: 26,
+                          height: 26,
+                          fit: BoxFit.contain,
+                          colorFilter: const ColorFilter.mode(
+                            Colors.white,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Akun (Active)
+                  Expanded(
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      alignment: Alignment.topCenter,
+                      children: [
+                        Positioned(
+                          top: -35,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                width: 76,
+                                height: 76,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: green,
+                                    width: 9,
+                                  ),
+                                ),
+                                alignment: Alignment.center,
+                                child: const Icon(
+                                  Icons.person,
+                                  size: 32,
+                                  color: green,
+                                ),
+                              ),
+                              const SizedBox(height: 3),
+                              const Text(
+                                "AKUN",
+                                style: TextStyle(
+                                  fontFamily: "Kanit",
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-
-              Positioned.fill(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: GestureDetector(
-                          onTap: () {},
-                          child: Center(
-                            child: SvgPicture.asset(
-                              "lib/images/home_nav_icon.svg",
-                              width: 25,
-                              height: 24,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: GestureDetector(
-                          onTap: () {},
-                          child: Center(
-                            child: SvgPicture.asset(
-                              "lib/images/shield_nav_icon.svg",
-                              width: 18,
-                              height: 22,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: GestureDetector(
-                          onTap: () {},
-                          child: Center(
-                            child: SvgPicture.asset(
-                              "lib/images/chat_nav_icon.svg",
-                              width: 25,
-                              height: 25,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    Expanded(
-                      child: Transform.translate(
-                        offset: const Offset(0, -5),
-                        child: Column(
-                          children: [
-                            Container(
-                              width: 65,
-                              height: 65,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                border: Border.all(color: green, width: 9),
-                              ),
-                              child: const Icon(
-                                Icons.person,
-                                size: 28,
-                                color: green,
-                              ),
-                            ),
-
-                            const Text(
-                              "AKUN",
-                              style: TextStyle(
-                                fontFamily: "Kanit",
-                                fontSize: 9,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
