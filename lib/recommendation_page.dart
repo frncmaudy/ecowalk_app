@@ -17,11 +17,130 @@ class _RecommendationPageState extends State<RecommendationPage> {
 
   static const primaryGreen = Color(0xFF176E5E);
 
+  static const List<_DestinationItem> _allDestinations = [
+    _DestinationItem(
+      image: "lib/images/moja_museum.png",
+      title: "Moja Museum",
+      location: "Jakarta Pusat",
+      price: "Mulai dari Rp. 136.500",
+      rating: 4.8,
+      imageScale: 1.0,
+      imageAlignment: Alignment.center,
+      imageOffset: Offset.zero,
+    ),
+    _DestinationItem(
+      image: "lib/images/ocean_park.png",
+      title: "Ocean Park BSD City Serpong",
+      location: "Tangerang",
+      price: "Mulai dari Rp. 65.000",
+      rating: 4.8,
+      imageScale: 1.0,
+      imageAlignment: Alignment.center,
+      imageOffset: Offset.zero,
+    ),
+    _DestinationItem(
+      image: "lib/images/kebun_raya.jpg",
+      title: "Kebun Raya Bogor",
+      location: "Bogor",
+      price: "Mulai dari Rp. 25.000",
+      rating: 4.7,
+      imageScale: 1.0,
+      imageAlignment: Alignment.center,
+      imageOffset: Offset.zero,
+    ),
+    _DestinationItem(
+      image: "lib/images/home_dufan.png",
+      title: "Dunia Fantasi (DUFAN)",
+      location: "Jakarta Utara",
+      price: "Mulai dari Rp. 250.000",
+      rating: 4.8,
+      imageScale: 1.0,
+      imageAlignment: Alignment.center,
+      imageOffset: Offset.zero,
+    ),
+    _DestinationItem(
+      image: "lib/images/home_tmii.png",
+      title: "Taman Mini Indonesia Indah (TMII)",
+      location: "Jakarta Timur",
+      price: "Mulai dari Rp. 25.000",
+      rating: 4.7,
+      imageScale: 1.0,
+      imageAlignment: Alignment.center,
+      imageOffset: Offset.zero,
+    ),
+  ];
+
+  static const List<_DestinationItem> _defaultDestinations = [
+    _DestinationItem(
+      image: "lib/images/moja_museum.png",
+      title: "Moja Museum",
+      location: "Jakarta Pusat",
+      price: "Mulai dari Rp. 136.500",
+      rating: 4.8,
+      imageScale: 1.0,
+      imageAlignment: Alignment.center,
+      imageOffset: Offset.zero,
+    ),
+    _DestinationItem(
+      image: "lib/images/ocean_park.png",
+      title: "Ocean Park BSD City Serpong",
+      location: "Tangerang",
+      price: "Mulai dari Rp. 65.000",
+      rating: 4.8,
+      imageScale: 1.0,
+      imageAlignment: Alignment.center,
+      imageOffset: Offset.zero,
+    ),
+    _DestinationItem(
+      image: "lib/images/kebun_raya.jpg",
+      title: "Kebun Raya Bogor",
+      location: "Bogor",
+      price: "Mulai dari Rp. 25.000",
+      rating: 4.7,
+      imageScale: 1.0,
+      imageAlignment: Alignment.center,
+      imageOffset: Offset.zero,
+    ),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _originController.addListener(_onSearchChanged);
+    _destinationController.addListener(_onSearchChanged);
+  }
+
+  void _onSearchChanged() {
+    setState(() {});
+  }
+
   @override
   void dispose() {
+    _originController.removeListener(_onSearchChanged);
+    _destinationController.removeListener(_onSearchChanged);
     _originController.dispose();
     _destinationController.dispose();
     super.dispose();
+  }
+
+  String get _searchQuery {
+    final dest = _destinationController.text.trim();
+    if (dest.isNotEmpty) return dest.toLowerCase();
+    final origin = _originController.text.trim();
+    if (origin.isNotEmpty) return origin.toLowerCase();
+    return "";
+  }
+
+  List<_DestinationItem> get _filteredDestinations {
+    final query = _searchQuery;
+    if (query.isEmpty) {
+      return _defaultDestinations;
+    }
+    return _allDestinations.where((item) {
+      final matchTitle = item.title.toLowerCase().contains(query);
+      final matchLocation = item.location.toLowerCase().contains(query);
+      return matchTitle || matchLocation;
+    }).toList();
   }
 
   @override
@@ -177,49 +296,50 @@ class _RecommendationPageState extends State<RecommendationPage> {
                 // Horizontal Cards
                 SizedBox(
                   height: 285,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.only(
-                      left: 16,
-                      right: 16,
-                    ),
-                    child: const Row(
-                      children: [
-                        _DestinationCard(
-                          image: "lib/images/moja_museum.png",
-                          title: "Moja Museum",
-                          location: "Jakarta Pusat",
-                          price: "Mulai dari Rp. 136.500",
-                          rating: 4.8,
-                          imageScale: 1.0,
-                          imageAlignment: Alignment.center,
-                          imageOffset: Offset.zero,
+                  child: _filteredDestinations.isEmpty
+                      ? const Center(
+                          child: Text(
+                            "Tujuan tidak ditemukan",
+                            style: TextStyle(
+                              fontFamily: "Kanit",
+                              fontSize: 14,
+                              color: Color(0xFF888888),
+                            ),
+                          ),
+                        )
+                      : SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.only(
+                            left: 16,
+                            right: 16,
+                          ),
+                          child: Row(
+                            children: [
+                              for (int i = 0;
+                                  i < _filteredDestinations.length;
+                                  i++) ...[
+                                if (i > 0) const SizedBox(width: 20),
+                                _DestinationCard(
+                                  image: _filteredDestinations[i].image,
+                                  title: _filteredDestinations[i].title,
+                                  location: _filteredDestinations[i].location,
+                                  price: _filteredDestinations[i].price,
+                                  rating: _filteredDestinations[i].rating,
+                                  imageScale:
+                                      _filteredDestinations[i].imageScale,
+                                  imageAlignment:
+                                      _filteredDestinations[i].imageAlignment,
+                                  imageOffset:
+                                      _filteredDestinations[i].imageOffset,
+                                  onTap: () {
+                                    _destinationController.text =
+                                        _filteredDestinations[i].title;
+                                  },
+                                ),
+                              ],
+                            ],
+                          ),
                         ),
-                        SizedBox(width: 20),
-                        _DestinationCard(
-                          image: "lib/images/ocean_park.png",
-                          title: "Ocean Park BSD City Serpong",
-                          location: "Tangerang",
-                          price: "Mulai dari Rp. 65.000",
-                          rating: 4.8,
-                          imageScale: 1.0,
-                          imageAlignment: Alignment.center,
-                          imageOffset: Offset.zero,
-                        ),
-                        SizedBox(width: 20),
-                        _DestinationCard(
-                          image: "lib/images/kebun_raya.png",
-                          title: "Kebun Raya Bogor",
-                          location: "Bogor",
-                          price: "Mulai dari Rp. 25.000",
-                          rating: 4.7,
-                          imageScale: 1.0,
-                          imageAlignment: Alignment.center,
-                          imageOffset: Offset.zero,
-                        ),
-                      ],
-                    ),
-                  ),
                 ),
 
                 const SizedBox(height: 8),
@@ -281,6 +401,29 @@ class _LocationField extends StatelessWidget {
   }
 }
 
+// Destination Item Model
+class _DestinationItem {
+  final String image;
+  final String title;
+  final String location;
+  final String price;
+  final double rating;
+  final double imageScale;
+  final Alignment imageAlignment;
+  final Offset imageOffset;
+
+  const _DestinationItem({
+    required this.image,
+    required this.title,
+    required this.location,
+    required this.price,
+    required this.rating,
+    this.imageScale = 1.0,
+    this.imageAlignment = Alignment.center,
+    this.imageOffset = Offset.zero,
+  });
+}
+
 // Destination Card
 class _DestinationCard extends StatelessWidget {
   final String image;
@@ -291,6 +434,7 @@ class _DestinationCard extends StatelessWidget {
   final double imageScale;
   final Alignment imageAlignment;
   final Offset imageOffset;
+  final VoidCallback? onTap;
 
   const _DestinationCard({
     required this.image,
@@ -301,11 +445,12 @@ class _DestinationCard extends StatelessWidget {
     this.imageScale = 0.80,
     this.imageAlignment = Alignment.center,
     this.imageOffset = Offset.zero,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final card = Container(
       width: 185,
       height: 285,
       decoration: BoxDecoration(
@@ -437,6 +582,15 @@ class _DestinationCard extends StatelessWidget {
         ],
       ),
     );
+
+    if (onTap != null) {
+      return GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: card,
+      );
+    }
+    return card;
   }
 }
 
